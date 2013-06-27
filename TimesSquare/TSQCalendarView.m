@@ -108,12 +108,16 @@
 
 - (void)setFirstDate:(NSDate *)firstDate;
 {
+    if (_firstValidDate == NULL)
+        _firstValidDate = firstDate;
     // clamp to the beginning of its month
     _firstDate = [self clampDate:firstDate toComponents:NSMonthCalendarUnit|NSYearCalendarUnit];
 }
 
 - (void)setLastDate:(NSDate *)lastDate;
 {
+    if (_lastValidDate == NULL)
+        _lastValidDate = lastDate;
     // clamp to the end of its month
     NSDate *firstOfMonth = [self clampDate:lastDate toComponents:NSMonthCalendarUnit|NSYearCalendarUnit];
     
@@ -213,7 +217,7 @@
         if (!self.headerView) {
             self.headerView = [self makeHeaderCellWithIdentifier:nil];
             if (self.tableView.visibleCells.count > 0) {
-                self.headerView.firstOfMonth = [self.tableView.visibleCells[0] firstOfMonth];
+                self.headerView.firstOfMonth = [[self.tableView.visibleCells objectAtIndex:0] firstOfMonth];
             } else {
                 self.headerView.firstOfMonth = self.firstDate;
             }
@@ -313,7 +317,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView;
 {
     if (self.pinsHeaderToTop && self.tableView.visibleCells.count > 0) {
-        TSQCalendarCell *cell = self.tableView.visibleCells[0];
+        TSQCalendarCell *cell = [self.tableView.visibleCells objectAtIndex:0];
         self.headerView.firstOfMonth = cell.firstOfMonth;
     }
 }

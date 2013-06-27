@@ -28,12 +28,16 @@
  */
 @property (nonatomic, strong) NSDate *firstDate;
 
+@property (nonatomic, strong) NSDate *firstValidDate;
+
 /** The latest month the calendar view displays.
  
  Set this property to any `NSDate`; `TSQCalendarView` will only look at the month and year.
  Must be set for the calendar to be useful.
  */
 @property (nonatomic, strong) NSDate *lastDate;
+
+@property (nonatomic, strong) NSDate *lastValidDate;
 
 /** The currently-selected date on the calendar.
  
