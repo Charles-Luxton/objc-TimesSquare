@@ -33,13 +33,22 @@
     TSQCalendarView *calendarView = [[TSQCalendarView alloc] init];
     calendarView.calendar = self.calendar;
     calendarView.rowCellClass = [TSQTACalendarRowCell class];
+    calendarView.firstValidDate = [NSDate dateWithTimeIntervalSinceNow:-60 * 60 * 24 * 120 * 1];
     calendarView.firstDate = [NSDate dateWithTimeIntervalSinceNow:-60 * 60 * 24 * 365 * 1];
-    calendarView.lastDate = [NSDate dateWithTimeIntervalSinceNow:60 * 60 * 24 * 365 * 5];
-    calendarView.backgroundColor = [UIColor colorWithRed:0.84f green:0.85f blue:0.86f alpha:1.0f];
-    calendarView.pagingEnabled = YES;
+    calendarView.lastDate = [NSDate dateWithTimeIntervalSinceNow:60 * 60 * 24 * 365 * 1];
+    calendarView.backgroundColor = [UIColor colorWithRed:1.0f green:1.0f blue:1.0f alpha:1.0f];
+    calendarView.pagingEnabled = NO;
     CGFloat onePixel = 1.0f / [UIScreen mainScreen].scale;
     calendarView.contentInset = UIEdgeInsetsMake(0.0f, onePixel, 0.0f, onePixel);
-
+    
+    NSDate * a = [NSDate dateWithTimeIntervalSinceNow:60 * 60 * 24 * 7];
+    NSDate * b = [NSDate dateWithTimeIntervalSinceNow:60 * 60 * 24 * 14];
+    NSDate * c = [NSDate dateWithTimeIntervalSinceNow:60 * 60 * 24 * 21];
+    NSDate * d = [NSDate dateWithTimeIntervalSinceNow:60 * 60 * 24 * 28];
+    NSMutableArray * dates =  [NSMutableArray arrayWithObjects: a,b,c,d, nil];
+    
+    calendarView.highlightedDates = dates;
+    
     self.view = calendarView;
 }
 
@@ -60,7 +69,7 @@
 - (void)viewDidAppear:(BOOL)animated;
 {
     [super viewDidAppear:animated];
-    
+        
     // Uncomment this to test scrolling performance of your custom drawing
 //    self.timer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(scroll) userInfo:nil repeats:YES];
 }
@@ -69,6 +78,7 @@
 {
     [self.timer invalidate];
     self.timer = nil;
+
 }
 
 - (void)scroll;

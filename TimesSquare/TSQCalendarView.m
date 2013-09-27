@@ -16,6 +16,7 @@
 @property (nonatomic, strong) UITableView *tableView;
 @property (nonatomic, strong) TSQCalendarMonthHeaderCell *headerView; // nil unless pinsHeaderToTop == YES
 
+
 @end
 
 
@@ -52,7 +53,7 @@
     _tableView.delegate = self;
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     _tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
-    [self addSubview:_tableView];    
+    [self addSubview:_tableView];
 }
 
 - (void)dealloc;
@@ -106,6 +107,12 @@
     [self setNeedsLayout];
 }
 
+- (void)setToday:(NSDate *)today
+{
+    _today = today;
+    [self.tableView reloadData];
+}
+
 - (void)setFirstDate:(NSDate *)firstDate;
 {
     if (_firstValidDate == NULL)
@@ -114,7 +121,7 @@
     _firstDate = [self clampDate:firstDate toComponents:NSMonthCalendarUnit|NSYearCalendarUnit];
 }
 
-- (void)setLastDate:(NSDate *)lastDate;
+- (void)setLastDate:(NSDate *)lastDate;	
 {
     if (_lastValidDate == NULL)
         _lastValidDate = lastDate;
@@ -139,19 +146,19 @@
     [[self cellForRowAtDate:_selectedDate] selectColumnForDate:nil];
     [[self cellForRowAtDate:startOfDay] selectColumnForDate:startOfDay];
     NSIndexPath *newIndexPath = [self indexPathForRowAtDate:startOfDay];
-    CGRect newIndexPathRect = [self.tableView rectForRowAtIndexPath:newIndexPath];
-    CGRect scrollBounds = self.tableView.bounds;
+    //CGRect newIndexPathRect = [self.tableView rectForRowAtIndexPath:newIndexPath];
+    //CGRect scrollBounds = self.tableView.bounds;
     
-    if (self.pagingEnabled) {
+    //if (self.pagingEnabled) {
         CGRect sectionRect = [self.tableView rectForSection:newIndexPath.section];
         [self.tableView setContentOffset:sectionRect.origin animated:YES];
-    } else {
-        if (CGRectGetMinY(scrollBounds) > CGRectGetMinY(newIndexPathRect)) {
-            [self.tableView scrollToRowAtIndexPath:newIndexPath atScrollPosition:UITableViewScrollPositionTop animated:YES];
-        } else if (CGRectGetMaxY(scrollBounds) < CGRectGetMaxY(newIndexPathRect)) {
-            [self.tableView scrollToRowAtIndexPath:newIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-        }
-    }
+    //} else {
+    //    if (CGRectGetMinY(scrollBounds) > CGRectGetMinY(newIndexPathRect)) {
+    //        [self.tableView scrollToRowAtIndexPath:newIndexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+    //    } else if (CGRectGetMaxY(scrollBounds) < CGRectGetMaxY(newIndexPathRect)) {
+    //        [self.tableView scrollToRowAtIndexPath:newIndexPath atScrollPosition:UITableViewScrollPositionMiddle animated:YES];
+    //    }
+    //}
     
     _selectedDate = startOfDay;
     
@@ -160,10 +167,43 @@
     }
 }
 
+-(void)setHighlightedDates:(NSMutableArray *)highlightedDates
+{
+    NSDate * newDate;
+    for (int i = 0; i < highlightedDates.count; i++) {
+        newDate = [self clampDate:[highlightedDates objectAtIndex:i] toComponents:NSDayCalendarUnit | NSMonthCalendarUnit|NSYearCalendarUnit];
+        [highlightedDates replaceObjectAtIndex:i withObject:newDate];
+    }
+    _highlightedDates = highlightedDates;
+    [self.tableView reloadData];
+}
+
+-(void)setHighlightTerminatorDate:(NSDate *)date
+{
+    _highlightTerminatorDate = date;
+    [self.tableView reloadData];
+}
+
 - (void)scrollToDate:(NSDate *)date animated:(BOOL)animated
 {
   NSInteger section = [self sectionForDate:date];
   [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:section] atScrollPosition:UITableViewScrollPositionTop animated:animated];
+}
+
+- (BOOL) isDateHighlighted:(NSDate *)date
+{
+    NSDate * a = [self clampDate:date toComponents:NSDayCalendarUnit | NSMonthCalendarUnit | NSYearCalendarUnit];
+    
+    if (self.highlightedDates == NULL)
+        return false;
+    for (int i = 0; i < self.highlightedDates.count; i++) {
+        
+        if ([a isEqualToDate:[self.highlightedDates objectAtIndex:i]]) {
+            return true;
+        }
+    }
+    
+    return false;
 }
 
 - (TSQCalendarMonthHeaderCell *)makeHeaderCellWithIdentifier:(NSString *)identifier;

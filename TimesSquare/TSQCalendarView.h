@@ -21,6 +21,8 @@
 
 /** @name Date Setup */
 
+@property (nonatomic, strong) NSDate *today;
+
 /** The earliest month the calendar view displays.
  
  Set this property to any `NSDate`; `TSQCalendarView` will only look at the month and year.
@@ -38,6 +40,10 @@
 @property (nonatomic, strong) NSDate *lastDate;
 
 @property (nonatomic, strong) NSDate *lastValidDate;
+
+@property (nonatomic, strong) NSMutableArray *highlightedDates;
+
+@property (nonatomic, strong) NSDate *highlightTerminatorDate;
 
 /** The currently-selected date on the calendar.
  
@@ -108,7 +114,11 @@
  */
 - (void)scrollToDate:(NSDate *)date animated:(BOOL)animated;
 
+- (BOOL)isDateHighlighted:(NSDate*)date;
+
 @end
+
+
 
 /** The methods in the `TSQCalendarViewDelegate` protocol allow the adopting delegate to either prevent a day from being selected or respond to it.
  */
